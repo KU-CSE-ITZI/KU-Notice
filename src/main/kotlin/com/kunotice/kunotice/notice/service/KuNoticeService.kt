@@ -11,16 +11,29 @@ import org.springframework.stereotype.Service
 class KuNoticeService(
     private val apiService: ApiService
 ) {
+    val queries = arrayOf(
+        "?forum=notice&cat=0000300001",
+        "?forum=11688412",
+        "?forum=11731332",
+        "?forum=notice&cat=0000300002",
+        "?forum=notice&cat=0000300003",
+        "?forum=65659&cat=0010300001",
+        "?forum=notice&cat=0000300006",
+        "?forum=11869309"
+    )
+
     fun crawlAllKuNotice(latestKuNotice: Notice?): List<Notice> {
         val notices = HashSet<Notice>()
         if (latestKuNotice != null) notices.add(latestKuNotice)
 
-        val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do?forum=notice"
-        run outForEach@{
-            generateSequence(0) { it + 1 }.forEach { page ->
-                val response = apiService.get(baseUrl, pageQuery(page))
-                val html = response.body?.string() ?: return@outForEach
-                for (parsedNotice in parseNoticeList(html)) if (!notices.add(parsedNotice)) return@outForEach
+        for (query in queries) {
+            val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do"
+            run outForEach@{
+                generateSequence(0) { it + 1 }.forEach { page ->
+                    val response = apiService.get(baseUrl, query + pageQuery(page))
+                    val html = response.body?.string() ?: return@outForEach
+                    for (parsedNotice in parseNoticeList(html)) if (!notices.add(parsedNotice)) return@outForEach
+                }
             }
         }
 
