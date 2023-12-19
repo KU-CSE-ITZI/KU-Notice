@@ -10,7 +10,10 @@ class EmailService(
     private val emailRepository: EmailRepository,
     private val javaMailSender: JavaMailSender
 ) {
-    fun sendAll(kuNotices: List<Notice>) {
+    fun sendAll(kuNotices: List<Notice>, crawledCareerEmploymentNotices: List<Notice>) {
+        val noticeCount = kuNotices.count() + crawledCareerEmploymentNotices.count()
+        if (noticeCount == 0) return
+
         val message = javaMailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, true, "UTF-8")
 
@@ -19,10 +22,17 @@ class EmailService(
                 "<a href=\"${it.url}\">${it.title}</a>"
             }
 
+        val scholarshipWelfareText =
+            "<H2>건국대학교 진로취업센터 공지사항</H2>" + crawledCareerEmploymentNotices.joinToString(separator = "<br><br>") {
+                "<a href=\"${it.url}\">${it.title}</a>"
+            }
+
+        val text = "$kuText<br><br>$scholarshipWelfareText"
+
         for (email in emailRepository.findAll()) {
             helper.setTo(email.address)
-            helper.setSubject("새로운 공지사항이 ${kuNotices.count()}개 등록되었습니다.")
-            helper.setText(kuText, true)
+            helper.setSubject("새로운 공지사항이 ${noticeCount}개 등록되었습니다.")
+            helper.setText(text, true)
             javaMailSender.send(message)
         }
     }
