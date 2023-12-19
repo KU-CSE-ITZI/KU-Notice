@@ -35,7 +35,7 @@ class KuNoticeService(
                     val html = response.body?.string() ?: return@outForEach
                     for (parsedNotice in parseNoticeList(html)) {
                         if (existNotices.contains(parsedNotice)) return@outForEach
-                        crawledNotices.add(parsedNotice)
+                        if (!crawledNotices.add(parsedNotice)) return@outForEach
                     }
 
                 }
