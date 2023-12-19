@@ -11,8 +11,8 @@ class NoticeService(
     private val emailService: EmailService
 ) {
     fun crawlAllKuNotice() {
-        val latestKuNotice = noticeRepository.findTopByOrderByNoticeIdDesc()
-        val crawledKuNotices = kuNoticeService.crawlAllKuNotice(latestKuNotice)
+        val kuNotices = noticeRepository.findAll()
+        val crawledKuNotices = kuNoticeService.crawlAllKuNotice(kuNotices)
         if (crawledKuNotices.isNotEmpty()) emailService.sendAll(crawledKuNotices)
         noticeRepository.saveAll(crawledKuNotices)
     }

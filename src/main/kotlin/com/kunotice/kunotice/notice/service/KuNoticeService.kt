@@ -3,6 +3,7 @@ package com.kunotice.kunotice.notice.service
 import com.kunotice.kunotice.common.service.ApiService
 import com.kunotice.kunotice.notice.entity.Notice
 import com.kunotice.kunotice.notice.enum.NoticeKind
+import org.aspectj.weaver.ast.Not
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Service
@@ -22,9 +23,9 @@ class KuNoticeService(
         "?forum=11869309"
     )
 
-    fun crawlAllKuNotice(latestKuNotice: Notice?): List<Notice> {
-        val notices = HashSet<Notice>()
-        if (latestKuNotice != null) notices.add(latestKuNotice)
+    fun crawlAllKuNotice(kuNotices: List<Notice>): List<Notice> {
+        val existNotices = HashSet<Notice>()
+        val crawledNotices = HashSet<Notice>()
 
         for (query in queries) {
             val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do"
@@ -32,13 +33,16 @@ class KuNoticeService(
                 generateSequence(0) { it + 1 }.forEach { page ->
                     val response = apiService.get(baseUrl, query + pageQuery(page))
                     val html = response.body?.string() ?: return@outForEach
-                    for (parsedNotice in parseNoticeList(html)) if (!notices.add(parsedNotice)) return@outForEach
+                    for (parsedNotice in parseNoticeList(html)) {
+                        if (existNotices.contains(parsedNotice)) return@outForEach
+                        crawledNotices.add(parsedNotice)
+                    }
+
                 }
             }
         }
 
-        notices.remove(latestKuNotice)
-        return notices.toList()
+        return crawledNotices.toList()
     }
 
     private fun parseNoticeList(html: String): List<Notice> {
