@@ -24,7 +24,7 @@ class KuNoticeService(
     )
 
     fun crawlAllKuNotice(kuNotices: List<Notice>): List<Notice> {
-        val existNotices = HashSet<Notice>()
+        val existNotices = HashSet<Notice>(kuNotices)
         val crawledNotices = HashSet<Notice>()
 
         for (query in queries) {
