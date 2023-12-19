@@ -10,17 +10,19 @@ class EmailService(
     private val emailRepository: EmailRepository,
     private val javaMailSender: JavaMailSender
 ) {
-    fun sendAll(notices: List<Notice>) {
+    fun sendAll(kuNotices: List<Notice>) {
         val message = javaMailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, true, "UTF-8")
-        val text = notices.joinToString(separator = "<br><br>") {
-            "<a href=\"${it.url}\">${it.title}</a>"
-        }
+
+        val kuText =
+            "<H2>건국대학교 공지사항</H2>" + kuNotices.joinToString(separator = "<br><br>") {
+                "<a href=\"${it.url}\">${it.title}</a>"
+            }
 
         for (email in emailRepository.findAll()) {
             helper.setTo(email.address)
-            helper.setSubject("새로운 공지사항이 ${notices.count()}개 등록되었습니다.")
-            helper.setText(text, true)
+            helper.setSubject("새로운 공지사항이 ${kuNotices.count()}개 등록되었습니다.")
+            helper.setText(kuText, true)
             javaMailSender.send(message)
         }
     }
