@@ -19,14 +19,19 @@ class EngineeringEducationNoticeService(
             "https://ceei.konkuk.ac.kr/noticeList.do?siteId=CEEI&boardSeq=1227&menuSeq=8579"
         run outForEach@{
             generateSequence(1) { it + 1 }.forEach { page ->
-                val response = apiService.get(baseUrl, pageQuery(page))
-                val html = response.body?.string() ?: return@outForEach
-                val parsedNotices = parseNoticeList(html)
+                try {
+                    val response = apiService.get(baseUrl, pageQuery(page))
+                    val html = response.body?.string() ?: return@outForEach
+                    val parsedNotices = parseNoticeList(html)
 
-                if (parsedNotices.isEmpty()) return@outForEach
-                for (parsedNotice in parsedNotices) {
-                    if (existNotices.contains(parsedNotice)) return@outForEach
-                    if (!crawledNotices.add(parsedNotice)) return@outForEach
+                    if (parsedNotices.isEmpty()) return@outForEach
+                    for (parsedNotice in parsedNotices) {
+                        if (existNotices.contains(parsedNotice)) return@outForEach
+                        if (!crawledNotices.add(parsedNotice)) return@outForEach
+                    }
+                } catch (e: Exception) {
+                    println(e)
+                    return@outForEach
                 }
             }
         }
