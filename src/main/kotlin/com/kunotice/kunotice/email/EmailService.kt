@@ -10,8 +10,13 @@ class EmailService(
     private val emailRepository: EmailRepository,
     private val javaMailSender: JavaMailSender
 ) {
-    fun sendAll(kuNotices: List<Notice>, engineeringEducationNotices: List<Notice>) {
-        val noticeCount = kuNotices.count() + engineeringEducationNotices.count()
+    fun sendAll(
+        kuNotices: List<Notice>,
+        engineeringEducationNotices: List<Notice>,
+        kuVolunteerNotices: List<Notice>
+    ) {
+        val noticeCount =
+            kuNotices.count() + engineeringEducationNotices.count() + kuVolunteerNotices.count()
         if (noticeCount == 0) return
 
         val message = javaMailSender.createMimeMessage()
@@ -27,7 +32,12 @@ class EmailService(
                 "<a href=\"${it.url}\">${it.title}</a>"
             }
 
-        val text = "$kuText<br><br>$engineeringEducationText"
+        val kuVolunteerText =
+            "<H2>건국대학교 사회봉사센터 공지사항</H2>" + kuVolunteerNotices.joinToString(separator = "<br><br>") {
+                "<a href=\"${it.url}\">${it.title}</a>"
+            }
+
+        val text = "$kuText<br><br>$engineeringEducationText<br><br>$kuVolunteerText"
 
         for (email in emailRepository.findAll()) {
             helper.setTo(email.address)

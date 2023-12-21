@@ -10,6 +10,7 @@ class NoticeService(
     private val noticeRepository: NoticeRepository,
     private val kuNoticeService: KuNoticeService,
     private val engineeringEducationNoticeService: EngineeringEducationNoticeService,
+    private val kuVolunteerNoticeService: KuVolunteerNoticeService,
     private val emailService: EmailService
 ) {
     fun crawlAllKuNotice() {
@@ -23,7 +24,16 @@ class NoticeService(
                 engineeringEducationNotices
             )
 
-        emailService.sendAll(crawledKuNotices, crawledEngineeringEducationNotices)
+        val kuVolunteerNotices =
+            noticeRepository.findAllByKind(NoticeKind.KU_VOLUNTEER_NOTICE)
+        val crawledKuVolunteerNotices =
+            kuVolunteerNoticeService.crawlAllKuVolunteerNotice(kuVolunteerNotices)
+
+        emailService.sendAll(
+            crawledKuNotices,
+            crawledEngineeringEducationNotices,
+            crawledKuVolunteerNotices
+        )
 
         noticeRepository.saveAll(crawledKuNotices)
         noticeRepository.saveAll(crawledEngineeringEducationNotices)
