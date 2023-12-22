@@ -24,17 +24,17 @@ class EmailService(
 
         val kuText =
             "<H2>건국대학교 공지사항</H2>" + kuNotices.joinToString(separator = "<br><br>") {
-                "<a href=\"${it.url}\">${it.title}</a>"
+                "<a href=\"${it.url}\">${it.title}${if (it.isImportant) "*" else ""}</a>"
             }
 
         val engineeringEducationText =
             "<H2>건국대학교 공학교육혁신사업단 공지사항</H2>" + engineeringEducationNotices.joinToString(separator = "<br><br>") {
-                "<a href=\"${it.url}\">${it.title}</a>"
+                "<a href=\"${it.url}\">${it.title}${if (it.isImportant) "*" else ""}</a>"
             }
 
         val kuVolunteerText =
             "<H2>건국대학교 사회봉사센터 공지사항</H2>" + kuVolunteerNotices.joinToString(separator = "<br><br>") {
-                "<a href=\"${it.url}\">${it.title}</a>"
+                "<a href=\"${it.url}\">${it.title}${if (it.isImportant) "*" else ""}</a>"
             }
 
         val text = "$kuText<br><br>$engineeringEducationText<br><br>$kuVolunteerText"
