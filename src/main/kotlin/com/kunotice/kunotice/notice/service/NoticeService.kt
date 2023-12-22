@@ -37,5 +37,6 @@ class NoticeService(
 
         noticeRepository.saveAll(crawledKuNotices)
         noticeRepository.saveAll(crawledEngineeringEducationNotices)
+        noticeRepository.saveAll(crawledKuVolunteerNotices)
     }
 }
