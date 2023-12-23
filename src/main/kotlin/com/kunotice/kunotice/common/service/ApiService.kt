@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service
 class ApiService(
     private val okHttpClient: OkHttpClient
 ) {
-    fun get(url: String, urlQuery: String): Response {
+    fun get(url: String, urlQuery: String = ""): Response {
         val requestUrl =
-            if (url.contains("?") || urlQuery.contains("?"))
+            if (urlQuery.isEmpty())
+                url
+            else if (url.contains("?") || urlQuery.contains("?"))
                 "$url$urlQuery"
             else
                 "$url?$urlQuery"
