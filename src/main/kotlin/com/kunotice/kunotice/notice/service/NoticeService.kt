@@ -51,5 +51,6 @@ class NoticeService(
         noticeRepository.saveAll(crawledEngineeringEducationNotices)
         noticeRepository.saveAll(crawledKuVolunteerNotices)
         noticeRepository.saveAll(crawledInnovationSupportNotices)
+        noticeRepository.saveAll(crawledCossNotices)
     }
 }
