@@ -3,7 +3,6 @@ package com.kunotice.kunotice.notice.service
 import com.kunotice.kunotice.common.service.ApiService
 import com.kunotice.kunotice.notice.entity.Notice
 import com.kunotice.kunotice.notice.enum.NoticeKind
-import org.aspectj.weaver.ast.Not
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.springframework.stereotype.Service
@@ -31,13 +30,17 @@ class KuNoticeService(
             val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do"
             run outForEach@{
                 generateSequence(0) { it + 1 }.forEach { page ->
-                    val response = apiService.get(baseUrl, query + pageQuery(page))
-                    val html = response.body?.string() ?: return@outForEach
-                    for (parsedNotice in parseNoticeList(html)) {
-                        if (existNotices.contains(parsedNotice)) return@outForEach
-                        if (!crawledNotices.add(parsedNotice)) return@outForEach
+                    try {
+                        val response = apiService.get(baseUrl, query + pageQuery(page))
+                        val html = response.body?.string() ?: return@outForEach
+                        for (parsedNotice in parseNoticeList(html)) {
+                            if (existNotices.contains(parsedNotice)) return@outForEach
+                            if (!crawledNotices.add(parsedNotice)) return@outForEach
+                        }
+                    } catch (e: Exception) {
+                        println(e)
+                        return@outForEach
                     }
-
                 }
             }
         }
