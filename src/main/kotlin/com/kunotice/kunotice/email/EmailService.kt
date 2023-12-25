@@ -30,7 +30,7 @@ class EmailService(
         val text = StringBuilder()
         notices.groupBy { it.kind }.forEach { (kind, notices) ->
             text.append("<H2>${titleMap[kind]}</H2>" + notices.joinToString(separator = "<br><br>") {
-                "${if (it.isImportant) "*중요*" else ""} - <a href=\"${it.url}\">${it.title}</a>"
+                "${if (it.isImportant) "[*중요*]" else ""} <a href=\"${it.url}\">${it.title}</a>"
             })
         }
 
