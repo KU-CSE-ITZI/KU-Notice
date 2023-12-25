@@ -10,7 +10,8 @@ class Notice(
     var title: String,
     var url: String,
     var isImportant: Boolean,
-    var kind: NoticeKind
+    var kind: NoticeKind,
+    var date: String?,
 ) : BaseEntity() {
     override fun hashCode(): Int {
         return noticeId.hashCode()

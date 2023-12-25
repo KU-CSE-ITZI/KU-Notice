@@ -1,6 +1,7 @@
 package com.kunotice.kunotice.notice.service
 
 import com.kunotice.kunotice.email.EmailService
+import com.kunotice.kunotice.notice.entity.Notice
 import com.kunotice.kunotice.notice.enum.NoticeKind
 import com.kunotice.kunotice.notice.repository.NoticeRepository
 import org.springframework.stereotype.Service
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service
 class NoticeService(
     private val noticeRepository: NoticeRepository,
     private val kuNoticeService: KuNoticeService,
+    private val kuScholarshipNoticeService: KuScholarshipNoticeService,
     private val engineeringEducationNoticeService: EngineeringEducationNoticeService,
     private val kuVolunteerNoticeService: KuVolunteerNoticeService,
     private val innovationSupportNoticeService: InnovationSupportNoticeService,
@@ -16,41 +18,44 @@ class NoticeService(
     private val emailService: EmailService
 ) {
     fun crawlAllKuNotice() {
+        val notices = mutableListOf<Notice>()
+
         val kuNotices = noticeRepository.findAllByKind(NoticeKind.KU_NOTICE)
-        val crawledKuNotices = kuNoticeService.crawlAllKuNotice(kuNotices)
+        notices.addAll(kuNoticeService.crawlAllKuNotice(kuNotices))
+
+        val kuScholarshipNotices =
+            noticeRepository.findAllByKind(NoticeKind.KU_SCHOLARSHIP_NOTICE)
+        notices.addAll(
+            kuScholarshipNoticeService.crawlAllKuScholarshipNotice(
+                kuScholarshipNotices
+            )
+        )
 
         val engineeringEducationNotices =
             noticeRepository.findAllByKind(NoticeKind.ENGINEERING_EDUCATION_NOTICE)
-        val crawledEngineeringEducationNotices =
+        notices.addAll(
             engineeringEducationNoticeService.crawlAllEngineeringEducationNotice(
                 engineeringEducationNotices
             )
+        )
 
         val kuVolunteerNotices =
             noticeRepository.findAllByKind(NoticeKind.KU_VOLUNTEER_NOTICE)
-        val crawledKuVolunteerNotices =
-            kuVolunteerNoticeService.crawlAllKuVolunteerNotice(kuVolunteerNotices)
+        notices.addAll(kuVolunteerNoticeService.crawlAllKuVolunteerNotice(kuVolunteerNotices))
 
         val innovationSupportNotices =
             noticeRepository.findAllByKind(NoticeKind.INNOVATION_SUPPORT_NOTICE)
-        val crawledInnovationSupportNotices =
-            innovationSupportNoticeService.crawlAllInnovationSupportNotice(innovationSupportNotices)
-
-        val cossNotices = noticeRepository.findAllByKind(NoticeKind.COSS_NOTICE)
-        val crawledCossNotices = cossNoticeService.crawlAllCossNotice(cossNotices)
-
-        emailService.sendAll(
-            crawledKuNotices,
-            crawledEngineeringEducationNotices,
-            crawledKuVolunteerNotices,
-            crawledInnovationSupportNotices,
-            crawledCossNotices
+        notices.addAll(
+            innovationSupportNoticeService.crawlAllInnovationSupportNotice(
+                innovationSupportNotices
+            )
         )
 
-        noticeRepository.saveAll(crawledKuNotices)
-        noticeRepository.saveAll(crawledEngineeringEducationNotices)
-        noticeRepository.saveAll(crawledKuVolunteerNotices)
-        noticeRepository.saveAll(crawledInnovationSupportNotices)
-        noticeRepository.saveAll(crawledCossNotices)
+        val cossNotices = noticeRepository.findAllByKind(NoticeKind.COSS_NOTICE)
+        notices.addAll(cossNoticeService.crawlAllCossNotice(cossNotices))
+
+        emailService.sendAll(notices)
+
+        noticeRepository.saveAll(notices)
     }
 }

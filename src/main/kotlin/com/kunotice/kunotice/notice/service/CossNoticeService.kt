@@ -53,12 +53,14 @@ class CossNoticeService(
         val url = "https://www.xr.ac.kr${noticeTag.attr("href")}"
         val id = "view/(\\d+)".toRegex().find(url)?.destructured?.component1() ?: title
         val isImportant = element.selectFirst("span.loopnum")?.text() == "공지"
+        val date = element.selectFirst("span.reg_date > time")?.text() ?: ""
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.COSS_NOTICE
+            kind = NoticeKind.COSS_NOTICE,
+            date = date
         )
     }
 }
