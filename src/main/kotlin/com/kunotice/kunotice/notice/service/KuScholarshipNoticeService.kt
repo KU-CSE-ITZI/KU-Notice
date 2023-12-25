@@ -8,38 +8,27 @@ import org.jsoup.nodes.Element
 import org.springframework.stereotype.Service
 
 @Service
-class KuNoticeService(
+class KuScholarshipNoticeService(
     private val apiService: ApiService
 ) {
-    val queries = arrayOf(
-        "?forum=notice&cat=0000300001",
-        "?forum=11731332",
-        "?forum=notice&cat=0000300002",
-        "?forum=notice&cat=0000300003",
-        "?forum=65659&cat=0010300001",
-        "?forum=notice&cat=0000300006",
-        "?forum=11869309"
-    )
 
-    fun crawlAllKuNotice(kuNotices: List<Notice>): List<Notice> {
-        val existNotices = HashSet<Notice>(kuNotices)
+    fun crawlAllKuScholarshipNotice(kuScholarshipNotices: List<Notice>): List<Notice> {
+        val existNotices = HashSet<Notice>(kuScholarshipNotices)
         val crawledNotices = HashSet<Notice>()
 
-        for (query in queries) {
-            val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do"
-            run outForEach@{
-                generateSequence(0) { it + 1 }.forEach { page ->
-                    try {
-                        val response = apiService.get(baseUrl, query + pageQuery(page))
-                        val html = response.body?.string() ?: return@outForEach
-                        for (parsedNotice in parseNoticeList(html)) {
-                            if (existNotices.contains(parsedNotice)) return@outForEach
-                            if (!crawledNotices.add(parsedNotice)) return@outForEach
-                        }
-                    } catch (e: Exception) {
-                        println(e)
-                        return@outForEach
+        val baseUrl = "https://www.konkuk.ac.kr/do/MessageBoard/ArticleList.do?forum=11688412"
+        run outForEach@{
+            generateSequence(0) { it + 1 }.forEach { page ->
+                try {
+                    val response = apiService.get(baseUrl, pageQuery(page))
+                    val html = response.body?.string() ?: return@outForEach
+                    for (parsedNotice in parseNoticeList(html)) {
+                        if (existNotices.contains(parsedNotice)) return@outForEach
+                        if (!crawledNotices.add(parsedNotice)) return@outForEach
                     }
+                } catch (e: Exception) {
+                    println(e)
+                    return@outForEach
                 }
             }
         }
@@ -61,13 +50,13 @@ class KuNoticeService(
         val url = "https://www.konkuk.ac.kr/do/MessageBoard/${noticeTag.attr("href")}"
         val id = url.split("id=").last()
         val isImportant = element.selectFirst("td > img") != null
-        val date = element.select("td").eq(3).text()
+        val date = element.select("td").eq(2).text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.KU_NOTICE,
+            kind = NoticeKind.KU_SCHOLARSHIP_NOTICE,
             date = date
         )
     }

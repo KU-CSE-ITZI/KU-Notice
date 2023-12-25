@@ -17,6 +17,7 @@ class EmailService(
         NoticeKind.KU_VOLUNTEER_NOTICE to "건국대학교 사회봉사센터 공지사항",
         NoticeKind.INNOVATION_SUPPORT_NOTICE to "건국대학교 대학혁신지원사업 공지사항",
         NoticeKind.COSS_NOTICE to "실감미디어 혁신공유대학사업단 공지사항",
+        NoticeKind.KU_SCHOLARSHIP_NOTICE to "건국대학교 장학공지사항",
     )
 
     fun sendAll(
