@@ -43,7 +43,7 @@ class EngineeringEducationNoticeService(
         val doc = Jsoup.parse(html)
         val noticeTables = doc.select("tbody#noticeList > tr")
         noticeTables.addAll(doc.select("tbody#dispList > tr"))
-        
+
         return noticeTables.mapNotNull { parseNotice(it) }
     }
 
@@ -56,12 +56,14 @@ class EngineeringEducationNoticeService(
         val url =
             "https://ceei.konkuk.ac.kr/noticeView.do?siteId=CEEI&boardSeq=1227&menuSeq=8579&seq=$id"
         val isImportant = element.selectFirst("td")?.text() == "[공지]"
+        val date = element.select("td").eq(3).text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.ENGINEERING_EDUCATION_NOTICE
+            kind = NoticeKind.ENGINEERING_EDUCATION_NOTICE,
+            date = date
         )
     }
 

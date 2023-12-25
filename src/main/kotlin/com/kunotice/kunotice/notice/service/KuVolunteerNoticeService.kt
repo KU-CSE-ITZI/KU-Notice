@@ -51,12 +51,14 @@ class KuVolunteerNoticeService(
         val url =
             "https://kuvolunteer.konkuk.ac.kr/noticeView.do?siteId=VOLUNTEER&boardSeq=773&menuSeq=5528&seq=$id"
         val isImportant = element.selectFirst("td")?.text() == "[공지]"
+        val date = element.select("td").eq(3).text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.KU_VOLUNTEER_NOTICE
+            kind = NoticeKind.KU_VOLUNTEER_NOTICE,
+            date = date
         )
     }
 

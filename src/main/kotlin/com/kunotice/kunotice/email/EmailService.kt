@@ -20,7 +20,7 @@ class EmailService(
     )
 
     fun sendAll(
-        notices: List<Notice>,
+        notices: MutableList<Notice>,
     ) {
         if (notices.isEmpty()) return
 
@@ -28,11 +28,14 @@ class EmailService(
         val helper = MimeMessageHelper(message, true, "UTF-8")
 
         val text = StringBuilder()
-        notices.groupBy { it.kind }.forEach { (kind, notices) ->
-            text.append("<H2>${titleMap[kind]}</H2>" + notices.joinToString(separator = "<br><br>") {
-                "${if (it.isImportant) "[*중요*]" else ""} <a href=\"${it.url}\">${it.title}</a>"
-            })
-        }
+        notices
+            .sortedByDescending { it.date }
+            .groupBy { it.kind }
+            .forEach { (kind, notices) ->
+                text.append("<H2>${titleMap[kind]}</H2>" + notices.joinToString(separator = "<br><br>") {
+                    "[${it.date}] ${if (it.isImportant) "[*중요*] " else ""}<a href=\"${it.url}\">${it.title}</a>"
+                })
+            }
 
         for (email in emailRepository.findAll()) {
             helper.setTo(email.address)

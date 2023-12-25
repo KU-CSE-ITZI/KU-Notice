@@ -53,12 +53,14 @@ class InnovationSupportNoticeService(
         val url = "http://ui.konkuk.ac.kr${noticeTag.attr("href")}"
         val id = "no=(\\d+)".toRegex().find(url)?.destructured?.component1() ?: title
         val isImportant = element.selectFirst("td.w_cell > span.ico") != null
+        val date = element.select("td").eq(3).text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.INNOVATION_SUPPORT_NOTICE
+            kind = NoticeKind.INNOVATION_SUPPORT_NOTICE,
+            date = date
         )
     }
 

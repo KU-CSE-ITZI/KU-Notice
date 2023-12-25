@@ -13,7 +13,7 @@ class KuNoticeService(
 ) {
     val queries = arrayOf(
         "?forum=notice&cat=0000300001",
-        "?forum=11688412",
+        // "?forum=11688412",
         "?forum=11731332",
         "?forum=notice&cat=0000300002",
         "?forum=notice&cat=0000300003",
@@ -62,12 +62,14 @@ class KuNoticeService(
         val url = "https://www.konkuk.ac.kr/do/MessageBoard/${noticeTag.attr("href")}"
         val id = url.split("id=").last()
         val isImportant = element.selectFirst("td > img") != null
+        val date = element.select("td").eq(3).text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
             isImportant = isImportant,
-            kind = NoticeKind.KU_NOTICE
+            kind = NoticeKind.KU_NOTICE,
+            date = date
         )
     }
 
