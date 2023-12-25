@@ -18,7 +18,6 @@ class KuNoticeService(
         "?forum=notice&cat=0000300003",
         "?forum=65659&cat=0010300001",
         "?forum=notice&cat=0000300006",
-        "?forum=11869309"
     )
 
     fun crawlAllKuNotice(kuNotices: List<Notice>): List<Notice> {
