@@ -12,4 +12,14 @@ class NoticeController(
     fun crawlAllKuNotice() {
         noticeService.crawlAllKuNotice()
     }
+
+    @GetMapping("/reset")
+    fun resetAllNotices() {
+        noticeService.resetAllNotices()
+    }
+
+    @GetMapping("/saved-notices")
+    fun sendSavedNotices() {
+        noticeService.sendSavedNotices()
+    }
 }
