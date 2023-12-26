@@ -58,4 +58,13 @@ class NoticeService(
 
         noticeRepository.saveAll(notices)
     }
+
+    fun resetAllNotices() {
+        noticeRepository.deleteAll()
+    }
+
+    fun sendSavedNotices() {
+        val notices = noticeRepository.findAll()
+        emailService.sendAll(notices.toMutableList())
+    }
 }
