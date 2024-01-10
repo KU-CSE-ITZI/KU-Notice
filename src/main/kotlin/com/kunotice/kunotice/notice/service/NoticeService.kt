@@ -1,5 +1,6 @@
 package com.kunotice.kunotice.notice.service
 
+import com.kunotice.kunotice.discord.DiscordService
 import com.kunotice.kunotice.email.EmailService
 import com.kunotice.kunotice.notice.entity.Notice
 import com.kunotice.kunotice.notice.enum.NoticeKind
@@ -15,7 +16,8 @@ class NoticeService(
     private val kuVolunteerNoticeService: KuVolunteerNoticeService,
     private val innovationSupportNoticeService: InnovationSupportNoticeService,
     private val cossNoticeService: CossNoticeService,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val discordService: DiscordService
 ) {
     fun crawlAllKuNotice() {
         val notices = mutableListOf<Notice>()
@@ -55,6 +57,7 @@ class NoticeService(
         notices.addAll(cossNoticeService.crawlAllCossNotice(cossNotices))
 
         emailService.sendAll(notices)
+        discordService.sendAll(notices)
 
         noticeRepository.saveAll(notices)
     }
