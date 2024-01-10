@@ -27,6 +27,8 @@ spring:
           auth: true
           starttls:
             enable: true
+discord:
+  webhook-url: "${DISCORD_WEBHOOK_URL}"
 
 ---
 
