@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 @Service
 class NoticeService(
     private val noticeRepository: NoticeRepository,
-    private val kuNoticeService: KuNoticeService,
     private val kuScholarshipNoticeService: KuScholarshipNoticeService,
     private val engineeringEducationNoticeService: EngineeringEducationNoticeService,
     private val kuVolunteerNoticeService: KuVolunteerNoticeService,
@@ -21,9 +20,6 @@ class NoticeService(
 ) {
     fun crawlAllKuNotice() {
         val notices = mutableListOf<Notice>()
-
-        val kuNotices = noticeRepository.findAllByKind(NoticeKind.KU_NOTICE)
-        notices.addAll(kuNoticeService.crawlAllKuNotice(kuNotices))
 
         val kuScholarshipNotices =
             noticeRepository.findAllByKind(NoticeKind.KU_SCHOLARSHIP_NOTICE)
