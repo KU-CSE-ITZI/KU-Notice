@@ -16,7 +16,7 @@ class KuVolunteerNoticeService(
         val crawledNotices = HashSet<Notice>()
 
         val baseUrl =
-            "https://kuvolunteer.konkuk.ac.kr/noticeList.do?siteId=VOLUNTEER&boardSeq=773&menuSeq=5528"
+            "https://kuvolunteer.konkuk.ac.kr/kuvolunteer/13809/subview.do"
         run outForEach@{
             generateSequence(1) { it + 1 }.forEach { page ->
                 val response = apiService.get(baseUrl, pageQuery(page))
@@ -36,33 +36,30 @@ class KuVolunteerNoticeService(
 
     private fun parseNoticeList(html: String): List<Notice> {
         val doc = Jsoup.parse(html)
-        val noticeTables = doc.select("tbody#noticeList > tr")
-        noticeTables.addAll(doc.select("tbody#dispList > tr"))
-
+        val noticeTables = doc.select("tbody > tr:not(.notice)")
         return noticeTables.mapNotNull { parseNotice(it) }
     }
 
     private fun parseNotice(element: Element?): Notice? {
         if (element == null) return null
-        val noticeTag = element.selectFirst("td.subject > a") ?: return null
+        val noticeTag = element.selectFirst("td.td-subject > a") ?: return null
 
         val title = noticeTag.text()
-        val id = noticeTag.attr("data-itsp-view-link")
+        val id = noticeTag.attr("href")
         val url =
-            "https://kuvolunteer.konkuk.ac.kr/noticeView.do?siteId=VOLUNTEER&boardSeq=773&menuSeq=5528&seq=$id"
-        val isImportant = element.selectFirst("td")?.text() == "[공지]"
-        val date = element.select("td").eq(3).text()
+            "https://kuvolunteer.konkuk.ac.kr$id"
+        val date = element.select("td.td-date").text()
         return Notice(
             noticeId = id,
             title = title,
             url = url,
-            isImportant = isImportant,
+            isImportant = false,
             kind = NoticeKind.KU_VOLUNTEER_NOTICE,
             date = date
         )
     }
 
     private fun pageQuery(page: Int): String {
-        return "&pageNum=$page"
+        return "&page=$page"
     }
 }
