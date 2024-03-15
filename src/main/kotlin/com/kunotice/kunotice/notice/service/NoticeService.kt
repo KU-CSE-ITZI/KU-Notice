@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class NoticeService(
     private val noticeRepository: NoticeRepository,
-    private val kuScholarshipNoticeService: KuScholarshipNoticeService,
-    private val engineeringEducationNoticeService: EngineeringEducationNoticeService,
     private val kuVolunteerNoticeService: KuVolunteerNoticeService,
-    private val innovationSupportNoticeService: InnovationSupportNoticeService,
     private val cossNoticeService: CossNoticeService,
     private val emailService: EmailService,
     private val discordService: DiscordService
@@ -21,33 +18,9 @@ class NoticeService(
     fun crawlAllKuNotice() {
         val notices = mutableListOf<Notice>()
 
-        val kuScholarshipNotices =
-            noticeRepository.findAllByKind(NoticeKind.KU_SCHOLARSHIP_NOTICE)
-        notices.addAll(
-            kuScholarshipNoticeService.crawlAllKuScholarshipNotice(
-                kuScholarshipNotices
-            )
-        )
-
-        val engineeringEducationNotices =
-            noticeRepository.findAllByKind(NoticeKind.ENGINEERING_EDUCATION_NOTICE)
-        notices.addAll(
-            engineeringEducationNoticeService.crawlAllEngineeringEducationNotice(
-                engineeringEducationNotices
-            )
-        )
-
         val kuVolunteerNotices =
             noticeRepository.findAllByKind(NoticeKind.KU_VOLUNTEER_NOTICE)
         notices.addAll(kuVolunteerNoticeService.crawlAllKuVolunteerNotice(kuVolunteerNotices))
-
-        val innovationSupportNotices =
-            noticeRepository.findAllByKind(NoticeKind.INNOVATION_SUPPORT_NOTICE)
-        notices.addAll(
-            innovationSupportNoticeService.crawlAllInnovationSupportNotice(
-                innovationSupportNotices
-            )
-        )
 
         val cossNotices = noticeRepository.findAllByKind(NoticeKind.COSS_NOTICE)
         notices.addAll(cossNoticeService.crawlAllCossNotice(cossNotices))
